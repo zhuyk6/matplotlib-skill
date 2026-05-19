@@ -1,10 +1,8 @@
 """Project-aware Matplotlib helpers for publication figures."""
 
-from __future__ import annotations
-
-from pathlib import Path
 import shutil
 import tomllib
+from pathlib import Path
 from typing import Any, Literal
 
 from cycler import cycler

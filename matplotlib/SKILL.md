@@ -9,7 +9,7 @@ Use the bundled configuration files for publication-style defaults.
 
 ## Setup
 
-- If the target repo lacks `matplotlib_config.py`, copy `assets/matplotlib_config.py` into the repo. If the structure of this repo is `src`, place it in `src/devtools/` for example.
+- If the target repo lacks `matplotlib_config.py`, copy `assets/matplotlib_config.py` into the repo. Make sure to place this file to the same directory as the plotting scripts.
 - If the target repo lacks `plot_config.toml`, copy `assets/plot_config.toml` into the repo and ask the user to edit the LaTeX widths, font sizes, palettes, and style defaults.
 - Import and configure once near the plotting entrypoint:
 

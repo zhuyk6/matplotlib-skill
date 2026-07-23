@@ -9,6 +9,7 @@ from typing import Any, Literal, cast
 import matplotlib as mpl
 from cycler import cycler
 from matplotlib import style as mpl_style
+from matplotlib.typing import ColorType
 from pydantic import BaseModel, ConfigDict, Field
 
 PT_PER_INCH = 72.27
@@ -65,9 +66,7 @@ def plot_context(
     config = load_plot_config(config_path)
     dynamic_rc: dict[str, Any] = {}
     if palette is not None:
-        dynamic_rc["axes.prop_cycle"] = cycler(
-            color=_resolve_palette(config, palette)
-        )
+        dynamic_rc["axes.prop_cycle"] = cycler(color=_resolve_palette(config, palette))
     if rc is not None:
         dynamic_rc.update(rc)
 
@@ -111,16 +110,21 @@ def get_latex_figsize(
     return _get_figsize(_resolve_width_pt(config, width), fraction, height_ratio)
 
 
-def _resolve_palette(config: PlotConfig, palette: str) -> tuple[str, ...]:
+def _resolve_palette(config: PlotConfig, palette: str) -> tuple[ColorType, ...]:
     """Return a named palette, with a useful error for invalid choices."""
 
-    try:
+    if palette in config.palettes:
         return config.palettes[palette]
-    except KeyError as exc:
-        choices = ", ".join(sorted(config.palettes))
+    elif palette in mpl.color_sequences:
+        return tuple(mpl.color_sequences[palette])
+    else:
+        user_choices = ", ".join(sorted(config.palettes))
+        mpl_choices = ", ".join(sorted(mpl.color_sequences))
         raise ValueError(
-            f"Unknown palette {palette!r}. Expected one of: {choices}."
-        ) from exc
+            f"Unknown palette {palette!r}. "
+            f"Expected one of: user-defined ({user_choices}) "
+            f"or Matplotlib built-in ({mpl_choices})."
+        )
 
 
 def _resolve_width_pt(config: PlotConfig, width: WidthName) -> float:
